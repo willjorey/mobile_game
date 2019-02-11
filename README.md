@@ -183,3 +183,34 @@ entities={{
 <StatusBar hidden={true} />
 </GameEngine>
 ```
+
+##Touch To Create a Box
+
+>CreateBox takes in entities, touches, and screen as its parameters.
+
+```
+let boxIds = 0;
+const CreateBox = (entities, { touches, screen }) => {
+    let world = entities["physics"].world;
+    let boxSize = Math.trunc(Math.max(screen.width, screen.height) * 0.075);
+    touches.filter(t => t.type === "press").forEach(t => {
+            let body = Matter.Bodies.rectangle(
+                       t.event.pageX, t.event.pageY, 
+                       boxSize, boxSize,
+                       { frictionAir: 0.021 });
+            Matter.World.add(world, [body]);
+                entities[++boxIds] = {
+                    body: body,
+                    size: [boxSize, boxSize],
+                    color: boxIds % 2 == 0 ? "pink" : "#B8E986",
+                    renderer: Box
+                };
+             });
+    return entities;
+};
+```
+
+>Touches is an array that stores every time the user touches the screen, and stores a certain type to it, such as ‘touch’ or ‘press.’ We take this array and filter for the ‘press’ type. For each press found, we add a new Rectangle body at its location, add it to the world, and dynamically add it to our entities.
+>After adding a new Box entity, we return our new entities object, and update our state behind the scenes.
+
+>Then add Create box to the GameEngine Systems
